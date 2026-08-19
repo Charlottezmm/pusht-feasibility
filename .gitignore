@@ -1,0 +1,22 @@
+.DS_Store
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local secrets and environment files
+.env
+.env.*
+
+# Large or private research material
+datasets/
+checkpoints/
+runs/
+*.pt
+*.pth
+*.ckpt
+
+# Temporary generated evidence
+artifacts/tmp/
+artifacts/reproduction-*/
