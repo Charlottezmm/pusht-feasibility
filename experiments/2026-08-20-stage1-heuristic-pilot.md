@@ -4,21 +4,35 @@
 
 - Date: 2026-08-20 (Asia/Shanghai)
 - Stage / gate: Gate 1 environment and Gate 2 interface pilot
-- Status: pass
+- Status: Gate 1 environment pass; Gate 2 interface and reproducibility pass; heuristic pilot
+  criterion not met; Gate 3 baseline evaluation not started
 - Related commit: the commit that adds this record
 
 ## Question
 
-Can the clean PushT environment execute a fixed 20-step heuristic pilot from two new processes,
-produce the expected interface outputs, render correctly, close cleanly, and reproduce its numeric
-trace within a predeclared tolerance?
+Under the fixed configuration of `gym-pusht==0.1.6`, `seed=0`, `damping=1.0`, state observations,
+RGB-array rendering, and a 20-step limit:
+
+1. Can the PushT environment reproducibly complete the `reset → step → render → close`
+   workflow and return the expected observations, rewards, termination flags, and diagnostic
+   information?
+2. In this episode, does the block-chasing heuristic increase the final coverage relative to the
+   initial coverage or reach the environment's success condition?
 
 ## Expected outcome and rationale
 
-The environment and logging procedure were expected to run reproducibly because the environment,
-software versions, seed, step limit, and deterministic heuristic were fixed. The heuristic was not
-expected to solve the task reliably because it chases the block center without using the goal pose
-or planning a useful contact direction.
+The environment was expected to accept valid two-dimensional actions, update its state, return
+complete interface outputs, produce an RGB image array, and close cleanly. Because the environment
+configuration, dependency versions, seed, step limit, and policy were fixed, two independent
+processes were expected to produce numerically equivalent traces within the declared tolerance.
+
+The block-chasing policy always selected the current center of the T-block as the agent's next
+target position. Therefore, the agent was expected to move toward and potentially contact the
+block. However, the policy did not use the goal position, block orientation, or contact geometry,
+so it was not expected to place the block reliably inside the target region.
+
+For this pilot, evidence supporting policy effectiveness would require either `success=True` or a
+positive final coverage change.
 
 ## Variables and controls
 
@@ -131,21 +145,41 @@ PASS lines=41 max_abs_diff=5.551e-17 atol=1.0e-12 rtol=0.0
 
 ## Interpretation
 
-The clean environment, selected interface, rendering path, cleanup path, and numeric reproduction
-procedure passed for this configuration. The block-chasing heuristic failed on seed 0: it briefly
-increased coverage at step 2, then ended with zero coverage and no success. A positive return did
-not indicate task completion because reward accumulated from transient overlap.
+The results support the conclusion that the selected PushT environment, interface, rendering path,
+logging procedure, cleanup procedure, and fixed-seed reproduction workflow functioned correctly
+under the tested configuration.
+
+The results also show that the block-chasing heuristic did not meet the task criterion in this
+episode. Although the agent contacted the block and briefly increased coverage, the episode ended
+with zero coverage and `success=False`.
+
+The positive episode return does not demonstrate task completion because it accumulated rewards
+from temporary overlap during intermediate steps. Likewise, the maximum coverage being greater
+than the initial coverage only shows a temporary improvement, not a successful final placement.
+
+Therefore, this pilot provides evidence that the experiment can run reproducibly, but it does not
+establish that the policy is generally effective or ineffective across different seeds and initial
+states.
 
 ## Limitations
 
-- This was one 20-step pilot with one seed, not a baseline evaluation.
-- The heuristic did not use the goal pose, contact geometry, or T-block orientation.
+- The experiment included only one episode with one seed and 20 action steps. It therefore cannot
+  establish whether the policy is stable or effective across different initial states.
+- The current policy generated actions using only the current T-block center. It did not consider
+  the two-dimensional goal position, block orientation, contact geometry, or a useful pushing
+  direction.
+- The experiment did not compare the heuristic against a random, no-op, or other declared baseline
+  policy. Therefore, observed changes in coverage and return cannot be attributed confidently to
+  the heuristic.
+- Only `damping=1.0` was tested, so the experiment cannot compare the effects of different damping
+  values on coverage, return, contact, or success.
 - Initial coverage used the version-specific private method `env.unwrapped._get_coverage()` because
   reset info in `gym-pusht==0.1.6` does not expose coverage.
 - The declared tolerance was adopted after an earlier exact-text comparison exposed a
   `5.55e-17` floating-point difference; it was then validated on two new processes.
 - The low-level source of the floating-point difference was not isolated.
-- No claim is made about other seeds, damping values, learned policies, or real-world friction.
+- No conclusions can be made about learned policies, other environment versions, other seeds,
+  different damping values, or real-world friction.
 
 ## Understanding check
 
@@ -158,5 +192,15 @@ alone does not prove success.
 
 ## Gate decision
 
-**Pass for Gate 1 environment and Gate 2 interface pilot.** The next stage is to design a baseline
-evaluation across declared seeds. This record does not establish baseline policy quality.
+- **Gate 1 — Environment execution: PASS.** The environment initialized, accepted actions, updated
+  its state, rendered correctly, and closed cleanly.
+- **Gate 2 — Interface and reproducibility: PASS.** The required measurements were recorded, and two
+  independent processes produced equivalent numeric traces within the declared tolerance.
+- **Current heuristic pilot criterion: NOT MET.** For `seed=0` and the 20-step limit, final coverage
+  was lower than initial coverage and `success=False`.
+- **Gate 3 — Baseline evaluation: NOT STARTED.** One episode is insufficient to evaluate general
+  policy effectiveness.
+
+Stage 1 can now be closed as a successful environment and measurement pilot. The next experiment
+should keep the environment and dependency configuration fixed, compare the heuristic with a
+declared baseline across multiple seeds, and only then begin a controlled damping comparison.
