@@ -3,8 +3,10 @@
 An undergraduate, learning-first research project built around the
 [`gym-pusht`](https://github.com/huggingface/gym-pusht) environment.
 
-**Current status: Stage 0 — protocol design and environment setup.** No experiment has been run or
-validated in this clean project history.
+**Current status: Gates 1–2 passed — environment and interface pilot.** A fixed-seed, 20-step
+heuristic pilot now runs from the repository-local environment, renders and closes cleanly, and
+reproduces across new processes within a declared numeric tolerance. Baseline evaluation has not
+started.
 
 ## Working research direction
 
@@ -36,9 +38,9 @@ owner can explain it, run it, inspect its outputs, and reproduce the result.
 
 | Gate | Work | Required evidence | Status |
 | --- | --- | --- | --- |
-| 0. Question | Define the question, hypothesis, variables, controls, and stop conditions | Reviewed protocol | In progress |
-| 1. Environment | Install exact dependencies and run the minimum environment loop | Commands, versions, seed, output, clean-process rerun | Not started |
-| 2. Interface | Inspect observation, action, reward, termination, and rendering | Annotated trace and owner explanation | Not started |
+| 0. Question | Define the question, hypothesis, variables, controls, and stop conditions | Reviewed protocol | Pass |
+| 1. Environment | Install exact dependencies and run the minimum environment loop | Commands, versions, seed, output, clean-process rerun | Pass |
+| 2. Interface | Inspect observation, action, reward, termination, and rendering | Annotated trace and owner explanation | Pass |
 | 3. Baseline | Define and run a simple baseline under a fixed evaluation protocol | Metrics across declared seeds/episodes | Not started |
 | 4. Controlled comparison | Change one motion-resistance factor while preserving controls | Comparable result table and plots | Not started |
 | 5. Interpretation | Analyze failures, uncertainty, and limitations | Feasibility memo and next decision | Not started |
@@ -51,6 +53,34 @@ Every gate ends with one of three decisions:
 
 The detailed contract is in [`PROTOCOL.md`](PROTOCOL.md). New experiment records start from
 [`experiments/TEMPLATE.md`](experiments/TEMPLATE.md).
+
+## Verified pilot
+
+The first recorded pilot uses a deliberately limited block-chasing heuristic: each action targets
+the block center. It is useful for checking the interface and logging path, but it does not use the
+goal pose or constitute a learned policy.
+
+For seed 0 with `damping=1.0`, the 20-step pilot finished with `success=False`, final coverage `0.0`,
+and return `1.555275312143944`. Two new processes produced the same discrete trace and numerically
+equivalent floating-point values (`max_abs_diff=5.551e-17`, declared `atol=1e-12`). The environment
+procedure passed; the heuristic did not solve the task. See the
+[`experiment record`](experiments/2026-08-20-stage1-heuristic-pilot.md) for the full evidence and
+limitations.
+
+## Reproduce the pilot
+
+Use Python 3.11 and create the virtual environment outside Git tracking:
+
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
+.venv/bin/python -m pip install -r requirements-lock.txt
+.venv/bin/python -m pip check
+.venv/bin/python experiments/heuristic_pilot.py
+```
+
+The exact two-process comparison commands are preserved in the experiment record. Raw runs belong
+under `runs/`, which is intentionally ignored by Git.
 
 ## Initial scope
 
@@ -66,12 +96,18 @@ hyperparameter sweeps, and claims of algorithmic novelty.
 ```text
 README.md                Project purpose, scope, and current stage
 PROTOCOL.md              Stage gates and research-quality requirements
+requirements-lock.txt    Exact Python dependency snapshot for the verified pilot
 experiments/TEMPLATE.md  Blank record used for each experiment
+experiments/heuristic_pilot.py
+                         Fixed-seed 20-step interface pilot
+experiments/2026-08-20-stage1-heuristic-pilot.md
+                         Reviewed pilot record and evidence boundary
+tests/compare_numeric_logs.py
+                         Numeric-tolerance comparator for independent logs
 ```
 
-Code, dependency locks, and small evidence artifacts will be added during the guided workflow only
-after their purpose and acceptance criteria are understood. Large datasets, checkpoints, and raw
-runs remain outside Git.
+Small, reviewed code and evidence records are tracked. Large datasets, checkpoints, and raw runs
+remain outside Git.
 
 ## Research integrity
 
