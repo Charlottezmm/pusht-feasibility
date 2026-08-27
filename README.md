@@ -3,12 +3,12 @@
 An undergraduate, learning-first research project built around the
 [`gym-pusht`](https://github.com/huggingface/gym-pusht) environment.
 
-**Current status: Gates 1–4 passed — environment, interface, baseline, and controlled comparison.**
+**Current status: Gates 1–5 passed as evidence gates; the project-level decision is PIVOT.**
 The seeded random versus block-chasing baseline and the paired low / medium / high simulator
 motion-resistance comparison both completed under their declared protocols. Every group had mean
 final coverage `0.0`; the controlled comparison nevertheless found reproducible block-trajectory
-differences under identical planned actions. Gate 5 interpretation and the project-level
-`Proceed / Pivot / Stop` decision remain open.
+differences under identical planned actions. Gate 5 therefore selected a measurement pivot before
+any adaptive-controller implementation.
 
 ## Working research direction
 
@@ -45,7 +45,7 @@ owner can explain it, run it, inspect its outputs, and reproduce the result.
 | 2. Interface | Inspect observation, action, reward, termination, and rendering | Annotated trace and owner explanation | Pass |
 | 3. Baseline | Define and run a simple baseline under a fixed evaluation protocol | Metrics across declared seeds/episodes | Pass |
 | 4. Controlled comparison | Change one motion-resistance factor while preserving controls | Comparable result table and diagnostics | Pass |
-| 5. Interpretation | Analyze failures, uncertainty, and limitations | Feasibility memo and next decision | Not started |
+| 5. Interpretation | Analyze failures, uncertainty, and limitations | Feasibility memo and next decision | Pass — project Pivot |
 
 Every gate ends with one of three decisions:
 
@@ -82,6 +82,15 @@ success rate `0.0`, while independently validated trajectory diagnostics differe
 `damping=1.0` reference. This supports a simulator motion-response difference, not improved task
 performance, adaptation, or real-world friction claims. See the
 [`motion-resistance record`](experiments/2026-08-26-motion-resistance-comparison.md).
+
+## Gate 5 decision
+
+The first cycle ended with a project-level **Pivot**, not a direct Proceed or Stop. The execution,
+pairing, logging, and simulator-manipulation chain is credible, but the predeclared final-coverage
+metric remained at a complete floor. The next bounded step is to predeclare net block displacement
+and trajectory path length, then repeat the matched comparison. This measurement pivot does not
+yet test probe-based adaptation or controller effectiveness. See the
+[`feasibility memo`](experiments/2026-08-27-feasibility-memo.md).
 
 ## Reproduce the pilot
 
@@ -124,6 +133,8 @@ experiments/2026-08-25-random-vs-block-chasing-baseline.md
 experiments/motion_resistance_evaluator.py
 experiments/2026-08-26-motion-resistance-comparison.md
                          Gate 4 paired motion-resistance implementation and record
+experiments/2026-08-27-feasibility-memo.md
+                         Gate 5 evidence audit, project decision, and next-step boundary
 tests/compare_numeric_logs.py
                          Numeric-tolerance comparator for independent logs
 tests/test_motion_resistance_evaluator.py
