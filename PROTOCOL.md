@@ -97,3 +97,16 @@ Before an experiment is marked complete, the project owner should be able to exp
 - **Stop:** the time limit, safety boundary, or feasibility criterion has been reached.
 
 The decision and its evidence belong in the experiment record.
+
+## 9. Operational entry and evidence record
+
+Use [the current workflow](experiments/WORKFLOW.md) and the latest raw config/manifest to establish
+scope. Historical next-step prose does not authorize a new question or a full evaluator run.
+Before execution, fill the experiment template's baseline, independent-unit, data-role, provenance,
+resource-limit and failure-ledger fields. Keep run success, measurement validity, scientific
+interpretation and learner understanding as separate decisions.
+
+A command may be called verified only with a current execution record containing exact argv,
+executable, source/config identity, exit status and persisted output readback. `--help` verifies only
+the CLI/import path. Preserve failed and partial runs; never aggregate surviving episodes as the
+complete planned design. Negative outcomes are not exclusion reasons.

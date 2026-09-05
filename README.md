@@ -3,23 +3,23 @@
 An undergraduate, learning-first research project built around the
 [`gym-pusht`](https://github.com/huggingface/gym-pusht) environment.
 
-**Current status: Gates 1–5 passed as evidence gates; the project-level decision is PIVOT.**
-The seeded random versus block-chasing baseline and the paired low / medium / high simulator
-motion-resistance comparison both completed under their declared protocols. Every group had mean
-final coverage `0.0`; the controlled comparison nevertheless found reproducible block-trajectory
-differences under identical planned actions. Gate 5 therefore selected a measurement pivot before
-any adaptive-controller implementation.
+**Current status: the frozen three-path evaluation is complete; its directional improvement
+hypothesis is not supported.** The latest raw experiment is
+`runs/2026-08-31-three-path-formal-evaluation-v0.1`, documented in the
+[formal evaluation record](experiments/2026-08-31-three-path-formal-evaluation.md).
+No new intervention or scientific question has been selected in this repository.
 
-## Working research direction
+## Current question and start here
 
-The long-term direction is to study how a robot-learning policy behaves when object or environment
-dynamics change. The first bounded question is:
+With controller, probe, threshold and budget frozen, does using the measured probe response in the
+later-action rule improve final coverage relative to `probe-no-adjust`? The primary metric is
+`final_coverage(probe-adjust) - final_coverage(probe-no-adjust)`; `fixed` is auxiliary.
+Mean paired differences were negative in both tested settings. This is a bounded simulator result.
 
-> What is the smallest reproducible PushT evaluation protocol that can later support a controlled
-> comparison across different simulator motion-resistance settings?
-
-This question is provisional. It will be narrowed using implementation evidence, baseline results,
-and faculty feedback.
+Use the [start and review workflow](experiments/WORKFLOW.md) before launching anything. It provides
+an offline preflight, independent raw-log readback, failure handling and explicit command evidence.
+The [2026-09-05 audit](experiments/2026-09-05-workflow-audit.md) recomputed the current result without
+running inference or training. The older Gates 1–5 below are historical context, not a new work queue.
 
 ## Learning objectives
 
@@ -83,7 +83,7 @@ success rate `0.0`, while independently validated trajectory diagnostics differe
 performance, adaptation, or real-world friction claims. See the
 [`motion-resistance record`](experiments/2026-08-26-motion-resistance-comparison.md).
 
-## Gate 5 decision
+## Historical Gate 5 decision
 
 The first cycle ended with a project-level **Pivot**, not a direct Proceed or Stop. The execution,
 pairing, logging, and simulator-manipulation chain is credible, but the predeclared final-coverage
@@ -92,8 +92,10 @@ and trajectory path length, then repeat the matched comparison. This measurement
 yet test probe-based adaptation or controller effectiveness. See the
 [`feasibility memo`](experiments/2026-08-27-feasibility-memo.md).
 
-## Reproduce the pilot
+## Reproduce the historical heuristic pilot
 
+These historical installation/run commands were not re-executed in the 2026-09-05 audit.
+`requirements-lock.txt` covers the heuristic environment, not the Diffusion Policy controller.
 Use Python 3.11 and create the virtual environment outside Git tracking:
 
 ```bash
